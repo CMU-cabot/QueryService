@@ -18,22 +18,46 @@ import org.apache.wink.json4j.JSONObject;
 import org.hulop.data.i18n.Messages;
 
 public class MapGeojson {
-	private static String KEY_PROP_BUILDING = "building";
+	private static String KEY_PROP_BUILDING = "hulop_building";
 	private static String KEY_NODE = "node";
-	private static String KEY_PROP_CATEGORY = "category";
-	private static String KEY_NODE_HEIGHT = "node_height";
+	private static String KEY_PROP_CATEGORY = "facil_type";
+	private static String KEY_NODE_HEIGHT = "hulop_height";
 	private static String KEY_NAME = "name";
 	private static String KEY_NAME_PRON = "name_pron";
 	private static String KEY_EXIT = "exit";
 	private static String KEY_EXIT_PRON = "exit_pron";
-	private static String CATEGORY_TOILET = "公共用トイレの情報";
-	private static String CATEGORY_FACILITY = "公共施設の情報";
-	private static String KEY_SEX = "男女別";
+	/*
+	 * 1: public offices, etc.
+	 * 2: educational and cultural facilities, etc.
+	 * 3: medical facilities
+	 * 4: health and welfare facilities
+	 * 5: commercial facilities
+	 * 6: accommodations
+	 * 7: parks and athletic facilities
+	 * 8: tourist facilities
+	 * 9: transport facilities
+	 * 10: public toilets (standalone)
+	 * 99: other facilities
+	 */
+	private static String CATEGORY_TOILET = "10";
+	private static String CATEGORY_FACILITY = "公共施設の情報";  // TODO
+	/*
+	 * 1: none
+	 * 2: general toilets
+	 * 3: multi-functional toilets (without equipment for ostomates, nor diaper change bed)
+	 * 4: multi-functional toilets (with equipment for ostomates)
+	 * 5: multi-functional toilets (with diaper change bed)
+	 * 6: multi-functional toilets (with equipment for ostomates, and diaper change bed)
+	 * 99: unknown"
+	 */
+	private static String KEY_PROP_TOILET = "toilet";
+	private static String KEY_SEX = "sex";
 	private static String SEX_MALE = "1";
 	private static String SEX_FEMALE = "2";
-	private static String KEY_MAJOR_CATEGORY = "major_category";
-	private static String KEY_SUB_CATEGORY = "sub_category";
-	private static String KEY_PROP_FACILITY_ID = "施設ID";
+	private static String SEX_SHARED = "3";  // TODO
+	private static String KEY_MAJOR_CATEGORY = "hulop_major_category";
+	private static String KEY_SUB_CATEGORY = "hulop_sub_category";
+	private static String KEY_PROP_FACILITY_ID = "facility_id";
 	
 	public class Facility {
 		private JSONObject feature;
@@ -120,9 +144,11 @@ public class MapGeojson {
 	}
 	public class Toilet extends ServiceFacility {
 		String sex;
-		public Toilet(JSONObject feature, String building, String nodeID, String floor, String sex, String majorCategory) {
+		String type;
+		public Toilet(JSONObject feature, String building, String nodeID, String floor, String sex, String type, String majorCategory) {
 			super(feature, null, null, building, nodeID, floor, majorCategory);
 			this.sex = sex;
+			this.type = type;
 		}
 		public String getName() {
 			if (SEX_MALE.equals(sex)) {
@@ -205,7 +231,6 @@ public class MapGeojson {
 		String majorCategory = get(properties, KEY_MAJOR_CATEGORY);
 		String subCategory = get(properties, KEY_SUB_CATEGORY);
 		
-
 		Facility facility = map.get(facilityID);
 		if (facility != null) {
 			if (facility.combine(feature, name, namePron, building, floor, nodeID, majorCategory)) {
@@ -225,7 +250,8 @@ public class MapGeojson {
 			}
 		} else if (CATEGORY_TOILET.equals(category)) {
 			String sex = get(properties, KEY_SEX);
-			facility = new Toilet(feature, building, floor, nodeID, sex, majorCategory);
+			String toilet = get(properties, KEY_PROP_TOILET);
+			facility = new Toilet(feature, building, floor, nodeID, sex, toilet, majorCategory);
 		} else if (CATEGORY_FACILITY.equals(category)) {					
 			//System.err.println("no name facility: "+nodeID);					
 		} else {
