@@ -332,9 +332,15 @@ public class Directory implements Searchable, Cloneable {
 	
 
 	public static void main(String[] args) throws MalformedURLException, JSONException {
-		URL url = new URL("http://cmu-demo-hotel.mybluemix.net/query/directory?lng=-80.05914149539372&lat=40.41837024971599&user=test");			
+		String host = "localhost:9090/map";
+		String lat = "35.6195";
+		String lng = "139.777";
+		String user = "test-user";
+		String dist = "500";
+		String urlstr = String.format("http://%s/routesearch?action=start&cache=false&lat=%s&lng=%s&user=%s&dist=%s", host, lat, lng, user, dist);
+		System.out.println(urlstr);
+		URL url = new URL(urlstr);
 		Directory d = new Directory(url, new Locale("en"));
-		Directory d2 = d.search("room");
-		System.out.println(d2.toJSON().toString());
+		System.out.println(d.toJSON().get("sections").toString());
 	}
 }
