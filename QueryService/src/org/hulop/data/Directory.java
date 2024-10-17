@@ -62,7 +62,7 @@ public class Directory implements Searchable, Cloneable {
 			}
 			buildingsSection.sort(itemComparator);		
 		} 
-		if (map.getMajorCategories().length > 1) {
+		if (map.getMajorCategories().length > 0) {
 			Section categoriesSection = this.add(new Section(Messages.get(locale, "categories")));		
 			for(String category:map.getMajorCategories()) {
 				if (category == null) continue;
@@ -341,6 +341,56 @@ public class Directory implements Searchable, Cloneable {
 		System.out.println(urlstr);
 		URL url = new URL(urlstr);
 		Directory d = new Directory(url, new Locale("en"));
-		System.out.println(d.toJSON().get("sections").toString());
+
+		walk(d.toJSON(), 0, 5);
+	}
+	// utility function
+	static void walk(Object obj, int level, int max_level) throws JSONException {
+		if (level > max_level) {
+			return;
+		}
+		if (obj instanceof JSONArray) {
+			JSONArray array = (JSONArray) obj;
+			for (Object item : array) {
+				walk(item, level, max_level);
+			}
+			return;
+		}
+
+		String indent = " ".repeat(level * 2);
+		if (obj instanceof JSONObject) {
+			JSONObject jobj = (JSONObject) obj;
+
+			if (jobj.has("title")) {
+				String title = jobj.getString("title");
+				System.out.println(String.format("%s- %s", indent, title));
+
+				if (jobj.has("items")) {
+					JSONArray items = jobj.getJSONArray("items");
+					for (Object item : items) {
+						walk(item, level + 1, max_level);
+					}
+				}
+				else if (jobj.has("content")) {
+					walk(jobj.get("content"), level + 1, max_level);
+				}
+			}
+			else if (jobj.has("name")) {
+				String name = jobj.getString("name");
+				System.out.println(String.format("%s* %s", indent, name));
+			}
+			else if (jobj.has("sections")) {
+				JSONArray items = jobj.getJSONArray("sections");
+				for (Object item : items) {
+					walk(item, level, max_level);
+				}
+			}
+			else {
+				for (Object key : jobj.keySet()) {
+					System.out.println(String.format("%s+ %s", indent, key));
+					walk(jobj.get(key), level + 1, max_level);
+				}
+			}
+		}
 	}
 }
