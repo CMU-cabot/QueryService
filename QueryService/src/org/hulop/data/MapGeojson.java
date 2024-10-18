@@ -21,7 +21,7 @@ public class MapGeojson {
 	private static String KEY_PROP_BUILDING = "hulop_building";
 	private static String KEY_NODE = "node";
 	private static String KEY_PROP_CATEGORY = "facil_type";
-	private static String KEY_NODE_HEIGHT = "hulop_height";
+	private static String KEY_NODE_HEIGHT = "node_height";
 	private static String KEY_NAME = "name";
 	private static String KEY_NAME_PRON = "name_pron";
 	private static String KEY_EXIT = "exit";
