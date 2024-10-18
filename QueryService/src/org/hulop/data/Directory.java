@@ -357,7 +357,10 @@ public class Directory implements Searchable, Cloneable {
 			return;
 		}
 
-		String indent = " ".repeat(level * 2);
+		String indent = "";
+		for (int i = 0; i < level; i++ ) {
+			indent += "  ";
+		}
 		if (obj instanceof JSONObject) {
 			JSONObject jobj = (JSONObject) obj;
 
