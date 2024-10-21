@@ -3,6 +3,7 @@
 <properties>
 <entry key="buildings">Search by Building</entry>
 <entry key="categories">Search by Category</entry>
+<entry key="floors">Search by Floor</entry>
 <entry key="people">Search by Name</entry>
 <entry key="list_of_people">List of Names</entry>
 <entry key="male_restroom">Male Restroom</entry>

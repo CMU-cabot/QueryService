@@ -61,7 +61,26 @@ public class Directory implements Searchable, Cloneable {
 				buildingDirectory.showSectionIndex = true;
 			}
 			buildingsSection.sort(itemComparator);		
-		} 
+		}
+		Section floorsSection = this.add(new Section(Messages.get(locale, "floors")));
+		for (String floor:map.getFloors()) {
+			if (floor == null) continue;
+			List<Facility> facilities = map.getFacilitiesByFloor(floor);
+			Item i = floorsSection.add(new Item(floorString(floor), null));
+			
+			Directory  floorDirectory = i.setContent(new Directory());
+			Section floorSection = floorDirectory.add(new Section(floor));
+			for(Facility f:facilities) {
+				try {
+					floorSection.add(new Item(f.getName(), f.getNamePron(), f.getNodeID(), buildingFloorString(f), buildingFloorPronString(f)));
+				} catch(Exception e) {
+					System.err.println(f);
+				}
+			}
+			floorDirectory.sortAndDevide(itemComparator, firstLetterIndex);
+			floorDirectory.showSectionIndex = true;
+		}
+		floorsSection.sort(itemComparator);	
 		if (map.getMajorCategories().length > 0) {
 			Section categoriesSection = this.add(new Section(Messages.get(locale, "categories")));		
 			for(String category:map.getMajorCategories()) {
@@ -92,6 +111,14 @@ public class Directory implements Searchable, Cloneable {
 		serviceSection.sort(itemComparator);
 	}
 	
+	protected String floorString(String floor) {
+		Double f = Double.parseDouble(floor);
+		if (f < 0) {
+			return "B"+(-f.intValue())+"F";			
+		} else {
+			return f.intValue()+"F";			
+		}
+	}
 	protected String buildingFloorString(Facility facility) {
 		try {
 			Double f = Double.parseDouble(facility.getFloor());

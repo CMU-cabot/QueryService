@@ -275,6 +275,15 @@ public class MapGeojson {
 		return buildings.toArray(new String[0]);
 	}
 
+	public String[] getFloors() {
+		HashSet<String> floors = new HashSet<String>();
+		for(Facility f: facilities){
+			if (!validName(f.floor)) continue;
+			floors.add(f.floor);
+		}
+		return floors.toArray(new String[0]);
+	}
+
 	private boolean validName(String building) {
 		return building != null && !building.startsWith("_");
 	}
@@ -290,6 +299,11 @@ public class MapGeojson {
 
 	public List<Facility> getFacilitiesByBuilding(String building) {
 		return facilities.stream().filter(f -> validName(f.building) && f.building.equals(building))
+				.collect(Collectors.<Facility>toList());
+	}
+
+	public List<Facility> getFacilitiesByFloor(String floor) {
+		return facilities.stream().filter(f -> validName(f.floor) && f.floor.equals(floor))
 				.collect(Collectors.<Facility>toList());
 	}
 	
