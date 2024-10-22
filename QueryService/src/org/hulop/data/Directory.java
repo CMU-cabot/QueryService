@@ -17,13 +17,16 @@ public class Directory implements Searchable, Cloneable {
 	
 	private ArrayList<Section> sections = new ArrayList<Section>();
 	public Boolean showSectionIndex = false;
+	private Boolean groupBuilding = false;
+	private Boolean groupFloor = false;
+	private Boolean groupCategory = false;
 	private JSONArray landmarks;
 
 	public Directory() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Directory(URL url, Locale locale) {
+	public Directory(URL url, Locale locale, boolean groupBuilding, boolean groupFloor, boolean groupCategory) {
 		MapGeojson map = null;
 		try {
 			map = MapGeojson.load(url, locale);
@@ -40,8 +43,8 @@ public class Directory implements Searchable, Cloneable {
 			}
 		};
 		FirstLetterIndex firstLetterIndex = new FirstLetterIndex();
-		
-		if (map.getBuildings().length > 1) {
+
+		if (groupBuilding && map.getBuildings().length > 1) {
 			Section buildingsSection = this.add(new Section(Messages.get(locale, "buildings")));		
 			for(String building:map.getBuildings()) {
 				if (building == null) continue;
@@ -62,26 +65,28 @@ public class Directory implements Searchable, Cloneable {
 			}
 			buildingsSection.sort(itemComparator);		
 		}
-		Section floorsSection = this.add(new Section(Messages.get(locale, "floors")));
-		for (String floor:map.getFloors()) {
-			if (floor == null) continue;
-			List<Facility> facilities = map.getFacilitiesByFloor(floor);
-			Item i = floorsSection.add(new Item(floorString(floor), null));
-			
-			Directory  floorDirectory = i.setContent(new Directory());
-			Section floorSection = floorDirectory.add(new Section(floor));
-			for(Facility f:facilities) {
-				try {
-					floorSection.add(new Item(f.getName(), f.getNamePron(), f.getNodeID(), buildingFloorString(f), buildingFloorPronString(f)));
-				} catch(Exception e) {
-					System.err.println(f);
+		if (groupFloor){
+			Section floorsSection = this.add(new Section(Messages.get(locale, "floors")));
+			for (String floor:map.getFloors()) {
+				if (floor == null) continue;
+				List<Facility> facilities = map.getFacilitiesByFloor(floor);
+				Item i = floorsSection.add(new Item(floorString(floor), null));
+
+				Directory  floorDirectory = i.setContent(new Directory());
+				Section floorSection = floorDirectory.add(new Section(floor));
+				for(Facility f:facilities) {
+					try {
+						floorSection.add(new Item(f.getName(), f.getNamePron(), f.getNodeID(), buildingFloorString(f), buildingFloorPronString(f)));
+					} catch(Exception e) {
+						System.err.println(f);
+					}
 				}
+				floorDirectory.sortAndDevide(itemComparator, firstLetterIndex);
+				floorDirectory.showSectionIndex = true;
 			}
-			floorDirectory.sortAndDevide(itemComparator, firstLetterIndex);
-			floorDirectory.showSectionIndex = true;
+			floorsSection.sort(itemComparator);
 		}
-		floorsSection.sort(itemComparator);	
-		if (map.getMajorCategories().length > 0) {
+		if (groupCategory && map.getMajorCategories().length > 0) {
 			Section categoriesSection = this.add(new Section(Messages.get(locale, "categories")));		
 			for(String category:map.getMajorCategories()) {
 				if (category == null) continue;
@@ -364,11 +369,12 @@ public class Directory implements Searchable, Cloneable {
 		String lng = "139.777";
 		String user = "test-user";
 		String dist = "500";
+		Boolean enableGroupBuilding = true;
+		Boolean enableGroupFloor = true;
+		Boolean enableGroupCategory = true;
 		String urlstr = String.format("http://%s/routesearch?action=start&cache=false&lat=%s&lng=%s&user=%s&dist=%s", host, lat, lng, user, dist);
-		System.out.println(urlstr);
 		URL url = new URL(urlstr);
-		Directory d = new Directory(url, new Locale("en"));
-
+		Directory d = new Directory(url, new Locale("en"), enableGroupBuilding, enableGroupFloor, enableGroupCategory);
 		walk(d.toJSON(), 0, 5);
 	}
 	// utility function
