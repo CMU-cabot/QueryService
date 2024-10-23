@@ -55,7 +55,12 @@ public class Directory implements Searchable, Cloneable {
 				Section buildingSection = buildingDirectory.add(new Section(building));
 				for(Facility f:facilities) {
 					try {
-						buildingSection.add(new Item(f.getName(), f.getNamePron(), f.getNodeID(), buildingFloorString(f), buildingFloorPronString(f)));
+						buildingSection.add(new Item(f.getName(),
+													 f.getNamePron(),
+													 f.getNodeID(),
+													 buildingFloorString(f),
+													 buildingFloorPronString(f),
+													 f.getMajorCategory()));
 					} catch(Exception e) {
 						System.err.println(f);
 					}
@@ -76,7 +81,12 @@ public class Directory implements Searchable, Cloneable {
 				Section floorSection = floorDirectory.add(new Section(floor));
 				for(Facility f:facilities) {
 					try {
-						floorSection.add(new Item(f.getName(), f.getNamePron(), f.getNodeID(), buildingFloorString(f), buildingFloorPronString(f)));
+						floorSection.add(new Item(f.getName(),
+												  f.getNamePron(),
+												  f.getNodeID(),
+												  buildingFloorString(f),
+												  buildingFloorPronString(f),
+												  f.getMajorCategory()));
 					} catch(Exception e) {
 						System.err.println(f);
 					}
@@ -97,7 +107,12 @@ public class Directory implements Searchable, Cloneable {
 				Section categorySection = categoryDirectory.add(new Section(category));
 				for(Facility f:facilities) {
 					try {
-						categorySection.add(new Item(f.getName(), f.getNamePron(), f.getNodeID(), buildingFloorString(f), buildingFloorPronString(f)));
+						categorySection.add(new Item(f.getName(),
+						                             f.getNamePron(),
+													 f.getNodeID(),
+													 buildingFloorString(f),
+													 buildingFloorPronString(f),
+													 f.getMajorCategory()));
 					} catch(Exception e) {
 						System.err.println(f);
 					}
@@ -305,6 +320,12 @@ public class Directory implements Searchable, Cloneable {
 			this.subtitle = subtitle;
 			this.subtitlePron = subtitlePron;
 		}
+		public Item(String title, String titlePron, String nodeID, String subtitle, String subtitlePron, String majorCategory) {
+			this(title, titlePron, nodeID, subtitle, subtitlePron);
+			if ("_demo".equals(majorCategory)) {
+				this.forDemonstration = "true";
+			}
+		}
 		public int compare(Item item) {
 			if (sortKey != null && item.sortKey != null) {
 				return sortKey.compareToIgnoreCase(item.sortKey);
@@ -317,6 +338,7 @@ public class Directory implements Searchable, Cloneable {
 		private String nodeID;
 		private String subtitle;
 		private String subtitlePron;
+		private String forDemonstration;
 		
 		public String sortKey;
 		
@@ -333,6 +355,7 @@ public class Directory implements Searchable, Cloneable {
 			if (content != null) item.put("content", content.toJSON());
 			if (subtitle != null) item.put("subtitle", subtitle);
 			if (subtitlePron != null) item.put("subtitlePron", subtitlePron);
+			if (forDemonstration != null) item.put("forDemonstration", forDemonstration);
 
 			return item;
 		}

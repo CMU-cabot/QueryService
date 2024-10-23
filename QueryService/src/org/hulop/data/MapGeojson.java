@@ -115,7 +115,7 @@ public class MapGeojson {
 			return false;
 		}
 		public String getMajorCategory() {
-			return building;
+			return majorCategory;
 		}
 	}
 	public class ServiceFacility extends Facility {		
