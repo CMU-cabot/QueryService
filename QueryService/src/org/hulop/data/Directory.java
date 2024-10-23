@@ -322,7 +322,8 @@ public class Directory implements Searchable, Cloneable {
 		}
 		public Item(String title, String titlePron, String nodeID, String subtitle, String subtitlePron, String majorCategory) {
 			this(title, titlePron, nodeID, subtitle, subtitlePron);
-			if ("_demo".equals(majorCategory)) {
+			this.forDemonstration = "false";
+			if ("_demo_".equals(majorCategory)) {
 				this.forDemonstration = "true";
 			}
 		}
