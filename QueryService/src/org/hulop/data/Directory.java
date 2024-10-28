@@ -91,8 +91,8 @@ public class Directory implements Searchable, Cloneable {
 							f.getName(),
 							f.getNamePron(),
 							f.getNodeID(),
-							buildingFloorString(f),
-							buildingFloorPronString(f),
+							"outdoor",
+							"outdoor",
 							f.getMajorCategory()
 						));
 					} else {
