@@ -352,4 +352,18 @@ public class MapGeojson {
 		return null;
 	}
 
+	public Integer getInOutValue(String nodeId) {
+        try {
+            JSONObject node = json.getJSONObject(nodeId);
+            if (node != null) {
+                JSONObject properties = node.getJSONObject("properties");
+                if (properties != null && properties.has("in_out")) {
+                    return properties.getInt("in_out");
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

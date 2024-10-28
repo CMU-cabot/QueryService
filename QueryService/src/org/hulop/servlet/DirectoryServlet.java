@@ -49,7 +49,6 @@ public class DirectoryServlet extends HttpServlet {
 		lang = (lang != null) ? lang : "en";
 		
 		HashMap<String, String> params = new HashMap<String, String>();
-		params.put("action", "start");
 		params.put("lat", lat);
 		params.put("lng",  lng);
 		params.put("user",  user);
@@ -59,7 +58,7 @@ public class DirectoryServlet extends HttpServlet {
 		String use_http = System.getenv("HULOP_MAP_SERVICE_USE_HTTP");
 		String protocol = ("true".equals(use_http)) ? "http" : "https";
 		String mapService = System.getenv("HULOP_MAP_SERVICE");
-		String urlString = String.format("%s://%s/routesearch", protocol, mapService);
+		String baseUrlString = String.format("%s://%s/routesearch", protocol, mapService);
 		String enableGroupBuildingString = System.getenv("SEARCH_BY_BUILDING_ENABLED");
 		boolean enableGroupBuilding = enableGroupBuildingString != null ? Boolean.parseBoolean(enableGroupBuildingString) : false;
 		String enableGroupFloorString = System.getenv("SEARCH_BY_FLOOR_ENABLED");
@@ -67,15 +66,28 @@ public class DirectoryServlet extends HttpServlet {
 		String enableGroupCategoryString = System.getenv("SEARCH_BY_BUILDING_ENABLED");
 		boolean enableGroupCategory = enableGroupCategoryString != null ? Boolean.parseBoolean(enableGroupCategoryString) : false;
 
+		params.put("action", "start");
+		String featuresUrlString = baseUrlString;
 		Boolean first = true;
 		for(String key:params.keySet()) {
-			urlString += first ? "?" : "&";
-			urlString += key+"="+params.get(key);
+			featuresUrlString += first ? "?" : "&";
+			featuresUrlString += key+"="+params.get(key);
 			first = false;
 		}
+
+		params.put("action", "nodemap");
+		String nodemapUrlString = baseUrlString;
+		first = true;
+		for (String key : params.keySet()) {
+			nodemapUrlString += first ? "?" : "&";
+			nodemapUrlString += key + "=" + params.get(key);
+			first = false;
+		}
+
 		try {
-			URL url = new URL(urlString);
-			Directory cdd = new Directory(url, new Locale(lang), enableGroupBuilding, enableGroupFloor, enableGroupCategory);
+			URL featuresUrl = new URL(featuresUrlString);
+			URL nodemapUrl  = new URL(nodemapUrlString);
+			Directory cdd = new Directory(featuresUrl, nodemapUrl, new Locale(lang), enableGroupBuilding, enableGroupFloor, enableGroupCategory);
 			bean.addSearchable(user, cdd);
 			sendJSON(cdd.toJSON(), request, response);
 		}catch (Exception e) {

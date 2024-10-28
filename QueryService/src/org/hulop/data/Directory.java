@@ -26,11 +26,13 @@ public class Directory implements Searchable, Cloneable {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Directory(URL url, Locale locale, boolean groupBuilding, boolean groupFloor, boolean groupCategory) {
-		MapGeojson map = null;
+	public Directory(URL featuresUrl, URL nodemapUrl, Locale locale, boolean groupBuilding, boolean groupFloor, boolean groupCategory) {
+		MapGeojson features = null;
+		MapGeojson nodemap = null;
 		try {
-			map = MapGeojson.load(url, locale);
-			setLandmakrks(map.getLandmarks());
+			features = MapGeojson.load(featuresUrl, locale);
+			nodemap = MapGeojson.load(nodemapUrl, locale);
+			setLandmakrks(features.getLandmarks());
 		}catch(Exception e) {
 			e.printStackTrace();
 			return;
@@ -44,11 +46,11 @@ public class Directory implements Searchable, Cloneable {
 		};
 		FirstLetterIndex firstLetterIndex = new FirstLetterIndex();
 
-		if (groupBuilding && map.getBuildings().length > 1) {
+		if (groupBuilding && features.getBuildings().length > 1) {
 			Section buildingsSection = this.add(new Section(Messages.get(locale, "buildings")));		
-			for(String building:map.getBuildings()) {
+			for(String building:features.getBuildings()) {
 				if (building == null) continue;
-				List<Facility> facilities = map.getFacilitiesByBuilding(building);
+				List<Facility> facilities = features.getFacilitiesByBuilding(building);
 				Item i = buildingsSection.add(new Item(building, null));
 				
 				Directory buildingDirectory = i.setContent(new Directory());
@@ -72,35 +74,50 @@ public class Directory implements Searchable, Cloneable {
 		}
 		if (groupFloor){
 			Section floorsSection = this.add(new Section(Messages.get(locale, "floors")));
-			for (String floor:map.getFloors()) {
+			Item outdoorItem = floorsSection.add(new Item("Outdoor", null));
+    		Directory outdoorDirectory = outdoorItem.setContent(new Directory());
+    		Section outdoorSection = outdoorDirectory.add(new Section("Outdoor"));
+			for (String floor:features.getFloors()) {
 				if (floor == null) continue;
-				List<Facility> facilities = map.getFacilitiesByFloor(floor);
+				List<Facility> facilities = features.getFacilitiesByFloor(floor);
 				Item i = floorsSection.add(new Item(floorString(floor), null));
 
 				Directory  floorDirectory = i.setContent(new Directory());
 				Section floorSection = floorDirectory.add(new Section(floor));
 				for(Facility f:facilities) {
-					try {
-						floorSection.add(new Item(f.getName(),
-												  f.getNamePron(),
-												  f.getNodeID(),
-												  buildingFloorString(f),
-												  buildingFloorPronString(f),
-												  f.getMajorCategory()));
-					} catch(Exception e) {
-						System.err.println(f);
+					Integer inOutValue = nodemap.getInOutValue(f.getNodeID());
+					if (inOutValue != null && inOutValue == 1) {
+						outdoorSection.add(new Item(
+							f.getName(),
+							f.getNamePron(),
+							f.getNodeID(),
+							buildingFloorString(f),
+							buildingFloorPronString(f),
+							f.getMajorCategory()
+						));
+					} else {
+						floorSection.add(new Item(
+							f.getName(),
+							f.getNamePron(),
+							f.getNodeID(),
+							buildingFloorString(f),
+							buildingFloorPronString(f),
+							f.getMajorCategory()
+						));
 					}
 				}
 				floorDirectory.sortAndDevide(itemComparator, firstLetterIndex);
 				floorDirectory.showSectionIndex = true;
 			}
+			outdoorDirectory.sortAndDevide(itemComparator, firstLetterIndex);
+			outdoorDirectory.showSectionIndex = true;
 			floorsSection.sort(itemComparator);
 		}
-		if (groupCategory && map.getMajorCategories().length > 0) {
+		if (groupCategory && features.getMajorCategories().length > 0) {
 			Section categoriesSection = this.add(new Section(Messages.get(locale, "categories")));		
-			for(String category:map.getMajorCategories()) {
+			for(String category:features.getMajorCategories()) {
 				if (category == null) continue;
-				List<Facility> facilities = map.getFacilitiesByMajorCategory(category);
+				List<Facility> facilities = features.getFacilitiesByMajorCategory(category);
 				Item i = categoriesSection.add(new Item(category, null));
 				
 				Directory categoryDirectory = i.setContent(new Directory());
@@ -125,7 +142,7 @@ public class Directory implements Searchable, Cloneable {
 		
 		Section serviceSection = this.add(new Section(Messages.get(locale, "nearby_facility")));		
 		
-		for(Facility service:map.getServices()) {
+		for(Facility service:features.getServices()) {
 			serviceSection.add(new Item(service.getName(), service.getNamePron(), service.getNodeID()));
 		}
 		serviceSection.sort(itemComparator);
@@ -396,9 +413,11 @@ public class Directory implements Searchable, Cloneable {
 		Boolean enableGroupBuilding = true;
 		Boolean enableGroupFloor = true;
 		Boolean enableGroupCategory = true;
-		String urlstr = String.format("http://%s/routesearch?action=start&cache=false&lat=%s&lng=%s&user=%s&dist=%s", host, lat, lng, user, dist);
-		URL url = new URL(urlstr);
-		Directory d = new Directory(url, new Locale("en"), enableGroupBuilding, enableGroupFloor, enableGroupCategory);
+		String featuresUrlstr = String.format("http://%s/routesearch?action=start&cache=false&lat=%s&lng=%s&user=%s&dist=%s", host, lat, lng, user, dist);
+		String nodemapUrlString = String.format("http://%s/routesearch?action=nodemap&cache=false&lat=%s&lng=%s&user=%s&dist=%s", host, lat, lng, user, dist);
+		URL featuresUrl = new URL(featuresUrlstr);
+		URL nodemapUrl = new URL(nodemapUrlString);
+		Directory d = new Directory(featuresUrl, nodemapUrl, new Locale("en"), enableGroupBuilding, enableGroupFloor, enableGroupCategory);
 		walk(d.toJSON(), 0, 5);
 	}
 	// utility function
