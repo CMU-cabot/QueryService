@@ -1,0 +1,116 @@
+openapi: 3.0.2
+info:
+  title: QueryService API
+  description: QueryService API for CaBot (Hokoukukan 2018)
+  contact:
+    email: daisukes@cmu.edu
+  license:
+    name: MIT
+    url: https://github.com/CMU-cabot/QueryService/blob/hokoukukan-2018/LICENSE
+  version: 1.0.0
+servers:
+  - url: http://localhost:9090/query
+tags:
+  - name: query
+    description: Retrieve landmarks
+paths:
+  /directory:
+    get:
+      tags:
+        - query
+      summary: Get directory of landmarks
+      description: ''
+      operationId: directory
+      parameters:
+        - $ref: '#/components/parameters/user'
+        - $ref: '#/components/parameters/lat'
+        - $ref: '#/components/parameters/lng'
+        - $ref: '#/components/parameters/dist'
+        - $ref: '#/components/parameters/lang'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/directory'
+        '405':
+          description: Invalid input
+  /search:
+    get:
+      tags:
+        - query
+      summary: Search landmarks (needs to call directory first)
+      description: ''
+      operationId: search
+      parameters:
+        - $ref: '#/components/parameters/user'
+        - $ref: '#/components/parameters/q'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/search'
+        '405':
+          description: Invalid input
+components:
+  schemas:
+    directory:
+      $ref: /spec/directory.json
+    search:
+      $ref: /spec/search.json
+  parameters:
+    dist:
+      name: dist
+      in: query
+      description: max distance from the center in meters
+      required: true
+      schema:
+        type: number
+        format: double
+        example: 500
+    lang:
+      name: lang
+      in: query
+      description: language (default=en)
+      required: false
+      schema:
+        type: string
+        pattern: ^[a-zA-Z]{2}$
+        example: en
+    lat:
+      name: lat
+      in: query
+      description: center latitude
+      required: true
+      schema:
+        type: number
+        format: double
+        example: '35.61950'
+    lng:
+      name: lng
+      in: query
+      description: center longitude
+      required: true
+      schema:
+        type: number
+        format: double
+        example: '139.77700'
+    user:
+      name: user
+      in: query
+      description: any identifiable user id (session is valid for each user id)
+      required: true
+      schema:
+        type: string
+        example: user_id_string
+    q:
+      name: q
+      in: query
+      description: query string
+      required: true
+      schema:
+        type: string
+        example: Symbol Zone
