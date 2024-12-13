@@ -63,7 +63,7 @@ public class DirectoryServlet extends HttpServlet {
 		boolean enableGroupBuilding = enableGroupBuildingString != null ? Boolean.parseBoolean(enableGroupBuildingString) : false;
 		String enableGroupFloorString = System.getenv("SEARCH_BY_FLOOR_ENABLED");
 		boolean enableGroupFloor = enableGroupFloorString != null ? Boolean.parseBoolean(enableGroupFloorString) : false;
-		String enableGroupCategoryString = System.getenv("SEARCH_BY_BUILDING_ENABLED");
+		String enableGroupCategoryString = System.getenv("SEARCH_BY_CATEGORY_ENABLED");
 		boolean enableGroupCategory = enableGroupCategoryString != null ? Boolean.parseBoolean(enableGroupCategoryString) : false;
 
 		params.put("action", "start");
