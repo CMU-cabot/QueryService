@@ -299,7 +299,7 @@ public class MapGeojson {
         if (hulopTags == null || hulopTags.isEmpty()) {
             return false;
         }
-        return hulopTags.contains("read") || hulopTags.contains("hidden");
+        return hulopTags.contains("hidden");
     }
 
 	public String[] getMajorCategories() {
