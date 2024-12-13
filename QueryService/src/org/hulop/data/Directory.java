@@ -340,7 +340,7 @@ public class Directory implements Searchable, Cloneable {
 		public Item(String title, String titlePron, String nodeID, String subtitle, String subtitlePron, String hulopTags) {
 			this(title, titlePron, nodeID, subtitle, subtitlePron);
 			this.forDemonstration = "false";
-			if (hulopTags.contains("demo")) {
+			if (hulopTags != null && hulopTags.contains("demo")) {
 				this.forDemonstration = "true";
 			}
 		}
