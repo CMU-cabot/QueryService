@@ -62,7 +62,7 @@ public class Directory implements Searchable, Cloneable {
 													 f.getNodeID(),
 													 buildingFloorString(f),
 													 buildingFloorPronString(f),
-													 f.getMajorCategory()));
+													 f.getHulopTags()));
 					} catch(Exception e) {
 						System.err.println(f);
 					}
@@ -93,7 +93,7 @@ public class Directory implements Searchable, Cloneable {
 							f.getNodeID(),
 							"outdoor",
 							"outdoor",
-							f.getMajorCategory()
+							f.getHulopTags()
 						));
 					} else {
 						floorSection.add(new Item(
@@ -102,7 +102,7 @@ public class Directory implements Searchable, Cloneable {
 							f.getNodeID(),
 							buildingFloorString(f),
 							buildingFloorPronString(f),
-							f.getMajorCategory()
+							f.getHulopTags()
 						));
 					}
 				}
@@ -129,7 +129,7 @@ public class Directory implements Searchable, Cloneable {
 													 f.getNodeID(),
 													 buildingFloorString(f),
 													 buildingFloorPronString(f),
-													 f.getMajorCategory()));
+													 f.getHulopTags()));
 					} catch(Exception e) {
 						System.err.println(f);
 					}
@@ -337,10 +337,10 @@ public class Directory implements Searchable, Cloneable {
 			this.subtitle = subtitle;
 			this.subtitlePron = subtitlePron;
 		}
-		public Item(String title, String titlePron, String nodeID, String subtitle, String subtitlePron, String majorCategory) {
+		public Item(String title, String titlePron, String nodeID, String subtitle, String subtitlePron, String hulopTags) {
 			this(title, titlePron, nodeID, subtitle, subtitlePron);
 			this.forDemonstration = "false";
-			if ("_demo_".equals(majorCategory)) {
+			if (hulopTags.contains("demo")) {
 				this.forDemonstration = "true";
 			}
 		}
