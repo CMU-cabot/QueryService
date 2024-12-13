@@ -58,6 +58,7 @@ public class MapGeojson {
 	private static String KEY_MAJOR_CATEGORY = "hulop_major_category";
 	private static String KEY_SUB_CATEGORY = "hulop_sub_category";
 	private static String KEY_PROP_FACILITY_ID = "facility_id";
+	private static String KEY_HULOP_TAGS = "hulop_tags";
 	
 	public class Facility {
 		private JSONObject feature;
@@ -67,6 +68,7 @@ public class MapGeojson {
 		private String floor;
 		private String nodeID;
 		private String majorCategory;
+		private String hulopTags;
 
 		public String toString() {
 			try {
@@ -76,7 +78,7 @@ public class MapGeojson {
 			}
 			return "";
 		}
-		public Facility(JSONObject feature, String name, String pron, String building, String floor, String nodeID, String majorCategory) {
+		public Facility(JSONObject feature, String name, String pron, String building, String floor, String nodeID, String majorCategory, String hulopTags) {
 			this.feature = feature;
 			assert(name == null);
 			this.name = name;
@@ -85,8 +87,9 @@ public class MapGeojson {
 			this.floor = floor;
 			this.nodeID = nodeID;
 			this.majorCategory = majorCategory;
+			this.hulopTags = hulopTags;
 		}
-		public boolean combine(JSONObject feature,  String name, String pron, String building, String floor, String nodeID, String majorCategory) {
+		public boolean combine(JSONObject feature,  String name, String pron, String building, String floor, String nodeID, String majorCategory, String hulopTags) {
 			if (!this.building.equals(building)) {
 				return false;
 			}
@@ -117,10 +120,13 @@ public class MapGeojson {
 		public String getMajorCategory() {
 			return majorCategory;
 		}
+		public String getHulopTags() {
+			return hulopTags;
+		}
 	}
 	public class ServiceFacility extends Facility {		
-		public ServiceFacility(JSONObject feature, String name, String pron, String building, String floor, String nodeID, String majorCategory) {
-			super(feature, name, pron, building, floor, nodeID, majorCategory);
+		public ServiceFacility(JSONObject feature, String name, String pron, String building, String floor, String nodeID, String majorCategory, String hulopTags) {
+			super(feature, name, pron, building, floor, nodeID, majorCategory, hulopTags);
 		}
 		public boolean isService() {
 			return true;
@@ -129,7 +135,7 @@ public class MapGeojson {
 	public class GroupFacility extends Facility {
 		List<Facility> facilities;
 		public GroupFacility(List<Facility> facilities) {
-			super(null, facilities.get(0).getName(), facilities.get(0).getNamePron(), facilities.get(0).getBuilding(), facilities.get(0).getFloor(), null, null);
+			super(null, facilities.get(0).getName(), facilities.get(0).getNamePron(), facilities.get(0).getBuilding(), facilities.get(0).getFloor(), null, null, null);
 			this.facilities = facilities;
 		}
 		public String getNodeID() {
@@ -145,8 +151,8 @@ public class MapGeojson {
 	public class Toilet extends ServiceFacility {
 		String sex;
 		String type;
-		public Toilet(JSONObject feature, String building, String nodeID, String floor, String sex, String type, String majorCategory) {
-			super(feature, null, null, building, nodeID, floor, majorCategory);
+		public Toilet(JSONObject feature, String building, String nodeID, String floor, String sex, String type, String majorCategory, String hulopTags) {
+			super(feature, null, null, building, nodeID, floor, majorCategory, hulopTags);
 			this.sex = sex;
 			this.type = type;
 		}
@@ -230,10 +236,11 @@ public class MapGeojson {
 		String floor = get(feature, KEY_NODE_HEIGHT);
 		String majorCategory = get(properties, KEY_MAJOR_CATEGORY);
 		String subCategory = get(properties, KEY_SUB_CATEGORY);
+		String hulopTags = get(properties, KEY_HULOP_TAGS);
 		
 		Facility facility = map.get(facilityID);
 		if (facility != null) {
-			if (facility.combine(feature, name, namePron, building, floor, nodeID, majorCategory)) {
+			if (facility.combine(feature, name, namePron, building, floor, nodeID, majorCategory, hulopTags)) {
 				return null;
 			}
 			facility = null; // if it is not combined, create new one
@@ -244,14 +251,14 @@ public class MapGeojson {
 		}
 		if ((name != null && name.length() > 0) || (exit != null && exit.length() > 0)) {
 			if (subCategory != null && Arrays.asList(services).contains(subCategory)) {
-				facility = new ServiceFacility(feature, exit+name, exitPron+namePron, building, floor, nodeID, majorCategory);
+				facility = new ServiceFacility(feature, exit+name, exitPron+namePron, building, floor, nodeID, majorCategory, hulopTags);
 			} else {
-				facility = new Facility(feature, exit+name, exitPron+namePron, building, floor, nodeID, majorCategory);
+				facility = new Facility(feature, exit+name, exitPron+namePron, building, floor, nodeID, majorCategory, hulopTags);
 			}
 		} else if (CATEGORY_TOILET.equals(category)) {
 			String sex = get(properties, KEY_SEX);
 			String toilet = get(properties, KEY_PROP_TOILET);
-			facility = new Toilet(feature, building, floor, nodeID, sex, toilet, majorCategory);
+			facility = new Toilet(feature, building, floor, nodeID, sex, toilet, majorCategory, hulopTags);
 		} else if (CATEGORY_FACILITY.equals(category)) {					
 			//System.err.println("no name facility: "+nodeID);					
 		} else {
@@ -288,6 +295,13 @@ public class MapGeojson {
 		return building != null && !building.startsWith("_");
 	}
 
+	private boolean isExcludedByHulopTags(String hulopTags) {
+        if (hulopTags == null || hulopTags.isEmpty()) {
+            return false;
+        }
+        return hulopTags.contains("hidden");
+    }
+
 	public String[] getMajorCategories() {
 		HashSet<String> categories = new HashSet<String>();
 		for(Facility f: facilities){
@@ -298,17 +312,23 @@ public class MapGeojson {
 	}
 
 	public List<Facility> getFacilitiesByBuilding(String building) {
-		return facilities.stream().filter(f -> validName(f.building) && f.building.equals(building))
+		return facilities.stream()
+				.filter(f -> validName(f.building) && f.building.equals(building))
+				.filter(f -> !isExcludedByHulopTags(f.hulopTags))
 				.collect(Collectors.<Facility>toList());
 	}
 
 	public List<Facility> getFacilitiesByFloor(String floor) {
-		return facilities.stream().filter(f -> validName(f.floor) && f.floor.equals(floor))
+		return facilities.stream()
+				.filter(f -> validName(f.floor) && f.floor.equals(floor))
+				.filter(f -> !isExcludedByHulopTags(f.hulopTags))
 				.collect(Collectors.<Facility>toList());
 	}
 	
 	public List<Facility> getFacilitiesByMajorCategory(String category) {
-		return facilities.stream().filter(f -> validName(f.majorCategory) && f.majorCategory.equals(category))
+		return facilities.stream().
+				filter(f -> validName(f.majorCategory) && f.majorCategory.equals(category))
+				.filter(f -> !isExcludedByHulopTags(f.hulopTags))
 				.collect(Collectors.<Facility>toList());
 	}
 	
