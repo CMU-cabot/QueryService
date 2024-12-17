@@ -410,14 +410,15 @@ public class Directory implements Searchable, Cloneable {
 		String lng = "139.777";
 		String user = "test-user";
 		String dist = "500";
+		String lang = "en";
 		Boolean enableGroupBuilding = true;
 		Boolean enableGroupFloor = true;
 		Boolean enableGroupCategory = true;
-		String featuresUrlstr = String.format("http://%s/routesearch?action=start&cache=false&lat=%s&lng=%s&user=%s&dist=%s", host, lat, lng, user, dist);
-		String nodemapUrlString = String.format("http://%s/routesearch?action=nodemap&cache=false&lat=%s&lng=%s&user=%s&dist=%s", host, lat, lng, user, dist);
+		String featuresUrlstr = String.format("http://%s/routesearch?action=start&cache=false&lat=%s&lng=%s&user=%s&dist=%s&lang=%s", host, lat, lng, user, dist, lang);
+		String nodemapUrlString = String.format("http://%s/routesearch?action=nodemap&cache=false&lat=%s&lng=%s&user=%s&dist=%s&lang=%s", host, lat, lng, user, dist, lang);
 		URL featuresUrl = new URL(featuresUrlstr);
 		URL nodemapUrl = new URL(nodemapUrlString);
-		Directory d = new Directory(featuresUrl, nodemapUrl, new Locale("en"), enableGroupBuilding, enableGroupFloor, enableGroupCategory);
+		Directory d = new Directory(featuresUrl, nodemapUrl, new Locale(lang), enableGroupBuilding, enableGroupFloor, enableGroupCategory);
 		walk(d.toJSON(), 0, 5);
 	}
 	// utility function
