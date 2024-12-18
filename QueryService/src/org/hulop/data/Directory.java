@@ -85,6 +85,8 @@ public class Directory implements Searchable, Cloneable {
 				Directory  floorDirectory = i.setContent(new Directory());
 				Section floorSection = floorDirectory.add(new Section(floor));
 				for(Facility f:facilities) {
+					String hulopTags = f.getHulopTags();
+					if (hulopTags != null && hulopTags.contains("demo")) continue;
 					Integer inOutValue = nodemap.getInOutValue(f.getNodeID());
 					if (inOutValue != null && inOutValue == 1) {
 						outdoorSection.add(new Item(
@@ -93,7 +95,7 @@ public class Directory implements Searchable, Cloneable {
 							f.getNodeID(),
 							Messages.get(locale, "outdoor"),
 							Messages.get(locale, "outdoor"),
-							f.getHulopTags()
+							hulopTags
 						));
 					} else {
 						floorSection.add(new Item(
@@ -102,7 +104,7 @@ public class Directory implements Searchable, Cloneable {
 							f.getNodeID(),
 							buildingFloorString(f, locale),
 							buildingFloorPronString(f, locale),
-							f.getHulopTags()
+							hulopTags
 						));
 					}
 				}
