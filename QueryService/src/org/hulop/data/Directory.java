@@ -118,7 +118,7 @@ public class Directory implements Searchable, Cloneable {
 		if (groupCategory && features.getMajorCategories().length > 0) {
 			Section categoriesSection = this.add(new Section(Messages.get(locale, "categories")));		
 			for(String category:features.getMajorCategories()) {
-				if (category == null || category == "") continue;
+				if (category == null || category.isEmpty()) continue;
 				List<Facility> facilities = features.getFacilitiesByMajorCategory(category);
 				Item i = categoriesSection.add(new Item(Messages.get(locale, category), null));
 
