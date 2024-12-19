@@ -1,0 +1,17 @@
+{
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "items": {
+      "type": "array",
+      "required": true,
+      "items": {
+        "$ref": "/spec/item.json"
+      }
+    }
+  },
+  "required": ["title", "items"]
+}

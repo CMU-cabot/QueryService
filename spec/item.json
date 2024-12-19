@@ -1,0 +1,40 @@
+{
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "content": {
+      "type": "object",
+      "properties": {
+        "sections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "example": "can be nested section"
+          }
+        },
+        "showSectionIndex": {
+          "type": "boolean",
+          "example": true
+        }
+      }
+    },
+    "titlePron": {
+      "type": "string"
+    },
+    "subtitle": {
+      "type": "string"
+    },
+    "subtitlePron": {
+      "type": "string"
+    },
+    "nodeID": {
+      "type": "string"
+    },
+    "forDemonstration": {
+      "type": "boolean"
+    }
+  },
+  "required": ["title"]
+}

@@ -1,0 +1,30 @@
+
+{
+  "type": "object",
+  "properties": {
+    "sections": {
+      "type": "array",
+      "items": {
+        "$ref": "/spec/section.json"
+      }
+    }
+  },
+  "required": ["sections"],
+  "example": {
+    "sections": [
+      {
+        "items": [
+          {
+            "subtitle": "Others - 1F",
+            "titlePron": "Symbol Zone",
+            "subtitlePron": "Others - 1F",
+            "title": "Symbol Zone",
+            "nodeID": "EDITOR_node_1674009663672",
+            "forDemonstration": "false"
+          }
+        ]
+      }
+    ],
+    "showSectionIndex": false
+  }
+}

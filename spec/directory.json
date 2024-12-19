@@ -1,0 +1,166 @@
+{
+  "type": "object",
+  "properties": {
+    "landmarks": {
+      "type": "array",
+      "items": {
+        "$ref": "https://geojson.org/schema/Feature.json"
+      }
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "$ref": "/spec/section.json"
+      }
+    }
+  },
+  "required": ["landmarks", "sections"],
+  "example": {
+    "landmarks": [
+      {
+        "node": "SAMPLE_node_1",
+        "exit": "",
+        "node_height": 3,
+        "name": "Sample Landmark 1",
+        "geometry": {
+          "coordinates": [
+            139.77710319141147,
+            35.619576229820506
+          ],
+          "type": "Point"
+        },
+        "node_coordinates": [
+          139.77711023221016,
+          35.61957241416361
+        ],
+        "name_pron": "Sample Landmark 1",
+        "properties": {
+          "parking": 99,
+          "escalator": 99,
+          "hulop_file": "SAMPLE",
+          "ent1_node": "SAMPLE_node_1",
+          "ent1_lon": 139.77711023221016,
+          "ent1_n": "",
+          "name_ja": "Sample Landmark 1",
+          "nursing": 99,
+          "brail_tile": 99,
+          "lon": 139.77710319141147,
+          "facil_id": "SAMPLE_facil_1",
+          "toilet": 99,
+          "elevator": 99,
+          "barrier": 99,
+          "ent1_lat": 35.61957241416361,
+          "ent1_fl": 3,
+          "facil_type": 99,
+          "lat": 35.619576229820506
+        },
+        "exit_pron": ""
+      },
+      {
+        "node": "SAMPLE_node_2",
+        "exit": "",
+        "node_height": 1,
+        "name": "Sample Landmark 2",
+        "geometry": {
+          "coordinates": [
+            139.7771410776138,
+            35.619608935443534
+          ],
+          "type": "Point"
+        },
+        "node_coordinates": [
+          139.7771370543003,
+          35.61960784525632
+        ],
+        "name_pron": "Sample Landmark 2",
+        "properties": {
+          "parking": 99,
+          "escalator": 99,
+          "hulop_file": "SAMPLE",
+          "ent1_node": "SAMPLE_node_2",
+          "ent1_lon": 139.7771370543003,
+          "ent1_n": "",
+          "nursing": 99,
+          "brail_tile": 99,
+          "lon": 139.7771410776138,
+          "facil_id": "SAMPLE_facil_2",
+          "toilet": 99,
+          "elevator": 99,
+          "barrier": 99,
+          "ent1_lat": 35.61960784525632,
+          "ent1_fl": 1,
+          "facil_type": 99,
+          "lat": 35.619608935443534,
+          "name_en": "Sample Landmark 2"
+        },
+        "exit_pron": ""
+      }
+    ],
+    "sections": [
+      {
+        "title": "Search by Floor",
+        "items": [
+          {
+            "title": "1F",
+            "content": {
+              "sections": [
+                {
+                  "title": "E",
+                  "items": [
+                    {
+                      "subtitle": "Others - 1F",
+                      "titlePron": "Sample Exit",
+                      "subtitlePron": "Others - 1F",
+                      "title": "Sample Exit",
+                      "nodeID": "SAMPLE_node_3",
+                      "forDemonstration": "false"
+                    }
+                  ]
+                },
+                {
+                  "title": "S",
+                  "items": [
+                    {
+                      "subtitle": "Others - 1F",
+                      "titlePron": "Sample Zone",
+                      "subtitlePron": "Others - 1F",
+                      "title": "Sample Zone",
+                      "nodeID": "SAMPLE_node_4",
+                      "forDemonstration": "false"
+                    }
+                  ]
+                }
+              ],
+              "showSectionIndex": true
+            }
+          },
+          {
+            "title": "3F",
+            "content": {
+              "sections": [
+                {
+                  "title": "J",
+                  "items": [
+                    {
+                      "subtitle": "Others - 3F",
+                      "titlePron": "Sample Landmark 3",
+                      "subtitlePron": "Others - 3F",
+                      "title": "Sample Landmark 3",
+                      "nodeID": "SAMPLE_node_5",
+                      "forDemonstration": "false"
+                    }
+                  ]
+                }
+              ],
+              "showSectionIndex": true
+            }
+          }
+        ]
+      },
+      {
+        "title": "Nearby Facilities"
+      }
+    ],
+    "showSectionIndex": false
+  }
+}
