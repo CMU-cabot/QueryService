@@ -3,7 +3,11 @@
 <properties>
 <entry key="buildings">建物から検索</entry>
 <entry key="floors">フロアから検索</entry>
+<entry key="floor_above_ground">{0}階</entry>
+<entry key="floor_below_ground">地下{0}階</entry>
+<entry key="outdoor">屋外</entry>
 <entry key="categories">カテゴリーから検索</entry>
+<entry key="demonstration">デモ・テスト用</entry>
 <entry key="people">名前から検索</entry>
 <entry key="list_of_people">名前の一覧</entry>
 <entry key="male_restroom">男性用トイレ</entry>

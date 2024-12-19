@@ -60,8 +60,8 @@ public class Directory implements Searchable, Cloneable {
 						buildingSection.add(new Item(f.getName(),
 													 f.getNamePron(),
 													 f.getNodeID(),
-													 buildingFloorString(f),
-													 buildingFloorPronString(f),
+													 buildingFloorString(f, locale),
+													 buildingFloorPronString(f, locale),
 													 f.getHulopTags()));
 					} catch(Exception e) {
 						System.err.println(f);
@@ -74,35 +74,37 @@ public class Directory implements Searchable, Cloneable {
 		}
 		if (groupFloor){
 			Section floorsSection = this.add(new Section(Messages.get(locale, "floors")));
-			Item outdoorItem = floorsSection.add(new Item("Outdoor", null));
+			Item outdoorItem = floorsSection.add(new Item(Messages.get(locale, "outdoor"), null));
     		Directory outdoorDirectory = outdoorItem.setContent(new Directory());
-    		Section outdoorSection = outdoorDirectory.add(new Section("Outdoor"));
+			Section outdoorSection = outdoorDirectory.add(new Section(Messages.get(locale, "outdoor")));
 			for (String floor:features.getFloors()) {
 				if (floor == null) continue;
 				List<Facility> facilities = features.getFacilitiesByFloor(floor);
-				Item i = floorsSection.add(new Item(floorString(floor), null));
+				Item i = floorsSection.add(new Item(floorString(floor, locale), null));
 
 				Directory  floorDirectory = i.setContent(new Directory());
 				Section floorSection = floorDirectory.add(new Section(floor));
 				for(Facility f:facilities) {
+					String hulopTags = f.getHulopTags();
+					if (hulopTags != null && hulopTags.contains("demo")) continue;
 					Integer inOutValue = nodemap.getInOutValue(f.getNodeID());
 					if (inOutValue != null && inOutValue == 1) {
 						outdoorSection.add(new Item(
 							f.getName(),
 							f.getNamePron(),
 							f.getNodeID(),
-							"outdoor",
-							"outdoor",
-							f.getHulopTags()
+							Messages.get(locale, "outdoor"),
+							Messages.get(locale, "outdoor"),
+							hulopTags
 						));
 					} else {
 						floorSection.add(new Item(
 							f.getName(),
 							f.getNamePron(),
 							f.getNodeID(),
-							buildingFloorString(f),
-							buildingFloorPronString(f),
-							f.getHulopTags()
+							buildingFloorString(f, locale),
+							buildingFloorPronString(f, locale),
+							hulopTags
 						));
 					}
 				}
@@ -116,19 +118,19 @@ public class Directory implements Searchable, Cloneable {
 		if (groupCategory && features.getMajorCategories().length > 0) {
 			Section categoriesSection = this.add(new Section(Messages.get(locale, "categories")));		
 			for(String category:features.getMajorCategories()) {
-				if (category == null) continue;
+				if (category == null || category.isEmpty()) continue;
 				List<Facility> facilities = features.getFacilitiesByMajorCategory(category);
-				Item i = categoriesSection.add(new Item(category, null));
-				
+				Item i = categoriesSection.add(new Item(Messages.get(locale, category), null));
+
 				Directory categoryDirectory = i.setContent(new Directory());
-				Section categorySection = categoryDirectory.add(new Section(category));
+				Section categorySection = categoryDirectory.add(new Section(Messages.get(locale, category)));
 				for(Facility f:facilities) {
 					try {
 						categorySection.add(new Item(f.getName(),
 						                             f.getNamePron(),
 													 f.getNodeID(),
-													 buildingFloorString(f),
-													 buildingFloorPronString(f),
+													 buildingFloorString(f, locale),
+													 buildingFloorPronString(f, locale),
 													 f.getHulopTags()));
 					} catch(Exception e) {
 						System.err.println(f);
@@ -148,43 +150,40 @@ public class Directory implements Searchable, Cloneable {
 		serviceSection.sort(itemComparator);
 	}
 	
-	protected String floorString(String floor) {
+	protected String floorString(String floor, Locale locale) {
 		Double f = Double.parseDouble(floor);
 		if (f < 0) {
-			return "B"+(-f.intValue())+"F";			
+			return Messages.get(locale, "floor_below_ground")
+						  .replace("{0}", String.valueOf(-f.intValue()));
 		} else {
-			return f.intValue()+"F";			
+			return Messages.get(locale, "floor_above_ground")
+						  .replace("{0}", String.valueOf(f.intValue()));
 		}
 	}
-	protected String buildingFloorString(Facility facility) {
+	protected String buildingFloorString(Facility facility, Locale locale) {
 		try {
 			Double f = Double.parseDouble(facility.getFloor());
 			if (f < 0) {
-				return facility.getBuilding()+" - B"+(-f.intValue())+"F";			
+				return facility.getBuilding() + " - " +
+					   Messages.get(locale, "floor_below_ground")
+							   .replace("{0}", String.valueOf(-f.intValue()));
 			} else {
-				return facility.getBuilding()+" - "+f.intValue()+"F";			
+				return facility.getBuilding() + " - " +
+					   Messages.get(locale, "floor_above_ground")
+							   .replace("{0}", String.valueOf(f.intValue()));
 			}
 		} catch (Exception e) {
 			return facility.getBuilding();
 		}
 	}
-	protected String buildingFloorPronString(Facility facility) {
-		try {
-			Double f = Double.parseDouble(facility.getFloor());
-			if (f < 0) {
-				return facility.getBuilding()+" - B"+(-f.intValue())+"F";			
-			} else {
-				return facility.getBuilding()+" - "+f.intValue()+"F";			
-			}
-		} catch (Exception e) {
-			return facility.getBuilding();
-		}
+	protected String buildingFloorPronString(Facility facility, Locale locale) {
+		return buildingFloorString(facility, locale);
 	}
-	protected String buildingRoomFloorString(Facility facility) {
-		return facility.getName()+" ("+buildingFloorString(facility)+")";
+	protected String buildingRoomFloorString(Facility facility, Locale locale) {
+		return facility.getName() + " (" + buildingFloorString(facility, locale) + ")";
 	}
-	protected String buildingRoomFloorPronString(Facility facility) {
-		return facility.getName()+" ("+buildingFloorPronString(facility)+")";
+	protected String buildingRoomFloorPronString(Facility facility, Locale locale) {
+		return facility.getName() + " (" + buildingFloorPronString(facility, locale) + ")";
 	}
 	
 
@@ -410,14 +409,15 @@ public class Directory implements Searchable, Cloneable {
 		String lng = "139.777";
 		String user = "test-user";
 		String dist = "500";
+		String lang = "en";
 		Boolean enableGroupBuilding = true;
 		Boolean enableGroupFloor = true;
 		Boolean enableGroupCategory = true;
-		String featuresUrlstr = String.format("http://%s/routesearch?action=start&cache=false&lat=%s&lng=%s&user=%s&dist=%s", host, lat, lng, user, dist);
-		String nodemapUrlString = String.format("http://%s/routesearch?action=nodemap&cache=false&lat=%s&lng=%s&user=%s&dist=%s", host, lat, lng, user, dist);
+		String featuresUrlstr = String.format("http://%s/routesearch?action=start&cache=false&lat=%s&lng=%s&user=%s&dist=%s&lang=%s", host, lat, lng, user, dist, lang);
+		String nodemapUrlString = String.format("http://%s/routesearch?action=nodemap&cache=false&lat=%s&lng=%s&user=%s&dist=%s&lang=%s", host, lat, lng, user, dist, lang);
 		URL featuresUrl = new URL(featuresUrlstr);
 		URL nodemapUrl = new URL(nodemapUrlString);
-		Directory d = new Directory(featuresUrl, nodemapUrl, new Locale("en"), enableGroupBuilding, enableGroupFloor, enableGroupCategory);
+		Directory d = new Directory(featuresUrl, nodemapUrl, new Locale(lang), enableGroupBuilding, enableGroupFloor, enableGroupCategory);
 		walk(d.toJSON(), 0, 5);
 	}
 	// utility function
