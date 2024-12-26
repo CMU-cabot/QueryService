@@ -78,7 +78,7 @@ public class Directory implements Searchable, Cloneable {
     		Directory outdoorDirectory = outdoorItem.setContent(new Directory());
 			Section outdoorSection = outdoorDirectory.add(new Section(Messages.get(locale, "outdoor")));
 			for (String floor:features.getFloors()) {
-				if (floor == null) continue;
+				if (floor == null || floor.isEmpty()) continue;
 				List<Facility> facilities = features.getFacilitiesByFloor(floor);
 				Item i = floorsSection.add(new Item(floorString(floor, locale), null));
 
@@ -405,10 +405,14 @@ public class Directory implements Searchable, Cloneable {
 
 	public static void main(String[] args) throws MalformedURLException, JSONException {
 		String host = "localhost:9090/map";
-		String lat = "35.6195";
-		String lng = "139.777";
+		// Miraikan
+		// String lat = "35.6195";
+		// String lng = "139.777";
+		// CMU
+		String lat = "40.44335";
+		String lng = "-79.94565";
 		String user = "test-user";
-		String dist = "500";
+		String dist = "5000";
 		String lang = "en";
 		Boolean enableGroupBuilding = true;
 		Boolean enableGroupFloor = true;
