@@ -86,7 +86,8 @@ public class Directory implements Searchable, Cloneable {
 				Section floorSection = floorDirectory.add(new Section(floor));
 				for(Facility f:facilities) {
 					String hulopTags = f.getHulopTags();
-					if (hulopTags != null && hulopTags.contains("demo")) continue;
+					String hulopMajorCategory = f.getMajorCategory();
+					if (hulopMajorCategory != null && hulopMajorCategory.contains("demonstration")) continue;
 					Integer inOutValue = nodemap.getInOutValue(f.getNodeID());
 					if (inOutValue != null && inOutValue == 1) {
 						outdoorSection.add(new Item(
