@@ -17,16 +17,13 @@ public class Directory implements Searchable, Cloneable {
 	
 	private ArrayList<Section> sections = new ArrayList<Section>();
 	public Boolean showSectionIndex = false;
-	private Boolean groupBuilding = false;
-	private Boolean groupFloor = false;
-	private Boolean groupCategory = false;
 	private JSONArray landmarks;
 
 	public Directory() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Directory(URL featuresUrl, URL nodemapUrl, Locale locale, boolean groupBuilding, boolean groupFloor, boolean groupCategory) {
+	public Directory(URL featuresUrl, URL nodemapUrl, Locale locale, boolean groupBuilding, boolean groupFloor, boolean groupCategory, boolean groupNearbyFacility) {
 		MapGeojson features = null;
 		MapGeojson nodemap = null;
 		try {
@@ -142,13 +139,14 @@ public class Directory implements Searchable, Cloneable {
 			}
 			categoriesSection.sort(itemComparator);		
 		}
-		
-		Section serviceSection = this.add(new Section(Messages.get(locale, "nearby_facility")));		
-		
-		for(Facility service:features.getServices()) {
-			serviceSection.add(new Item(service.getName(), service.getNamePron(), service.getNodeID()));
+		if (groupNearbyFacility) {
+			Section serviceSection = this.add(new Section(Messages.get(locale, "nearby_facility")));		
+			
+			for(Facility service:features.getServices()) {
+				serviceSection.add(new Item(service.getName(), service.getNamePron(), service.getNodeID()));
+			}
+			serviceSection.sort(itemComparator);
 		}
-		serviceSection.sort(itemComparator);
 	}
 	
 	protected String floorString(String floor, Locale locale) {
@@ -418,11 +416,12 @@ public class Directory implements Searchable, Cloneable {
 		Boolean enableGroupBuilding = true;
 		Boolean enableGroupFloor = true;
 		Boolean enableGroupCategory = true;
+		Boolean enableGroupNearbyFacility = false;
 		String featuresUrlstr = String.format("http://%s/routesearch?action=start&cache=false&lat=%s&lng=%s&user=%s&dist=%s&lang=%s", host, lat, lng, user, dist, lang);
 		String nodemapUrlString = String.format("http://%s/routesearch?action=nodemap&cache=false&lat=%s&lng=%s&user=%s&dist=%s&lang=%s", host, lat, lng, user, dist, lang);
 		URL featuresUrl = new URL(featuresUrlstr);
 		URL nodemapUrl = new URL(nodemapUrlString);
-		Directory d = new Directory(featuresUrl, nodemapUrl, new Locale(lang), enableGroupBuilding, enableGroupFloor, enableGroupCategory);
+		Directory d = new Directory(featuresUrl, nodemapUrl, new Locale(lang), enableGroupBuilding, enableGroupFloor, enableGroupCategory, enableGroupNearbyFacility);
 		walk(d.toJSON(), 0, 5);
 	}
 	// utility function

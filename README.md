@@ -13,7 +13,8 @@ HULOP_MAP_SERVICE_USE_HTTP # true: use HTTP - false: HTTPS
 ```
 # Specify the criteria for grouping categories
 # true: enabled - false: disabled (default)
-SEARCH_BY_BUILDING_ENABLED  # Enable grouping by building name
-SEARCH_BY_FLOOR_ENABLED     # Enable grouping by floor
-SEARCH_BY_CATEGORY_ENABLED  # Enable grouping by category name
+SEARCH_BY_BUILDING_ENABLED        # Enable grouping by building name
+SEARCH_BY_FLOOR_ENABLED           # Enable grouping by floor
+SEARCH_BY_CATEGORY_ENABLED        # Enable grouping by category name
+SEARCH_BY_NEARBY_FACILITY_ENABLED # Enable grouping by nearby facility
 ```

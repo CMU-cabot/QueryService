@@ -65,6 +65,8 @@ public class DirectoryServlet extends HttpServlet {
 		boolean enableGroupFloor = enableGroupFloorString != null ? Boolean.parseBoolean(enableGroupFloorString) : false;
 		String enableGroupCategoryString = System.getenv("SEARCH_BY_CATEGORY_ENABLED");
 		boolean enableGroupCategory = enableGroupCategoryString != null ? Boolean.parseBoolean(enableGroupCategoryString) : false;
+		String enableGroupNearbyFacilityString = System.getenv("SEARCH_BY_NEARBY_FACILITY_ENABLED");
+		boolean enableGroupNearbyFacility = enableGroupNearbyFacilityString != null ? Boolean.parseBoolean(enableGroupNearbyFacilityString) : false;
 
 		params.put("action", "start");
 		String featuresUrlString = baseUrlString;
@@ -87,7 +89,7 @@ public class DirectoryServlet extends HttpServlet {
 		try {
 			URL featuresUrl = new URL(featuresUrlString);
 			URL nodemapUrl  = new URL(nodemapUrlString);
-			Directory cdd = new Directory(featuresUrl, nodemapUrl, new Locale(lang), enableGroupBuilding, enableGroupFloor, enableGroupCategory);
+			Directory cdd = new Directory(featuresUrl, nodemapUrl, new Locale(lang), enableGroupBuilding, enableGroupFloor, enableGroupCategory, enableGroupNearbyFacility);
 			bean.addSearchable(user, cdd);
 			sendJSON(cdd.toJSON(), request, response);
 		}catch (Exception e) {
