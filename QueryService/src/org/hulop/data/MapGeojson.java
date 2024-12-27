@@ -57,7 +57,7 @@ public class MapGeojson {
 	private static String SEX_SHARED = "3";  // TODO
 	private static String KEY_MAJOR_CATEGORY = "hulop_major_category";
 	private static String KEY_SUB_CATEGORY = "hulop_sub_category";
-	private static String KEY_PROP_FACILITY_ID = "facility_id";
+	private static String KEY_PROP_FACILITY_ID = "facil_id";
 	private static String KEY_HULOP_TAGS = "hulop_tags";
 	
 	public class Facility {
