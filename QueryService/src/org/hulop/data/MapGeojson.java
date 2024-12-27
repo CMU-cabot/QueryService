@@ -250,10 +250,12 @@ public class MapGeojson {
 			building = "Others";
 		}
 		if ((name != null && name.length() > 0) || (exit != null && exit.length() > 0)) {
+			String facilityName = (exit != null) ? exit + name : name;
+			String facilityNamePron = (exitPron != null) ? exitPron + namePron : namePron;
 			if (subCategory != null && Arrays.asList(services).contains(subCategory)) {
-				facility = new ServiceFacility(feature, exit+name, exitPron+namePron, building, floor, nodeID, majorCategory, hulopTags);
+				facility = new ServiceFacility(feature, facilityName, facilityNamePron, building, floor, nodeID, majorCategory, hulopTags);
 			} else {
-				facility = new Facility(feature, exit+name, exitPron+namePron, building, floor, nodeID, majorCategory, hulopTags);
+				facility = new Facility(feature, facilityName, facilityNamePron, building, floor, nodeID, majorCategory, hulopTags);
 			}
 		} else if (CATEGORY_TOILET.equals(category)) {
 			String sex = get(properties, KEY_SEX);
