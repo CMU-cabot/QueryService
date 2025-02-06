@@ -4,6 +4,8 @@
 <entry key="buildings">Search by Building</entry>
 <entry key="categories">Search by Category</entry>
 <entry key="demonstration">for Demonstration/Test</entry>
+<entry key="Domestic_Pavilion">Domestic Pavilions</entry>
+<entry key="Signature_Pavilion">Signature Pavilions</entry>
 <entry key="floors">Search by Floor</entry>
 <entry key="floor_above_ground">{0}F</entry>
 <entry key="floor_below_ground">B{0}F</entry>
