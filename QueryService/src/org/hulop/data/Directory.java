@@ -1,5 +1,8 @@
 package org.hulop.data;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -404,12 +407,32 @@ public class Directory implements Searchable, Cloneable {
 
 	public static void main(String[] args) throws MalformedURLException, JSONException {
 		String host = "localhost:9090/map";
-		// Miraikan
-		// String lat = "35.6195";
-		// String lng = "139.777";
-		// CMU
-		String lat = "40.44335";
-		String lng = "-79.94565";
+		String lat = null;
+		String lng = null;
+		try {
+			URL url = new URL("http://"+host+"/api/config");
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("GET");
+			conn.setRequestProperty("Accept", "application/json");
+			if (conn.getResponseCode() != 200) {
+				throw new RuntimeException("HTTP error code: " + conn.getResponseCode());
+			}
+			BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			StringBuilder response = new StringBuilder();
+			String line;
+			while ((line = br.readLine()) != null) {
+				response.append(line);
+			}
+			br.close();
+			conn.disconnect();
+			JSONObject config = new JSONObject(response.toString());
+            lat = config.getJSONObject("INITIAL_LOCATION").getString("lat");
+            lng = config.getJSONObject("INITIAL_LOCATION").getString("lng");
+            System.out.println("Latitude: " + lat);
+            System.out.println("Longitude: " + lng);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 		String user = "test-user";
 		String dist = "5000";
 		String lang = "en";
