@@ -84,9 +84,21 @@ public class Messages {
 	public static ResourceBundle getBundle(Locale locale) {
 		return ResourceBundle.getBundle("org.hulop.data.i18n.Messages", locale, control);
 	}
-	
+
 	public static String get(Locale locale, String key) {
-		String remoteValue = getFromRemote(locale, key);
+		ResourceBundle resource = getBundle(locale);
+		if (resource != null) {
+			try {
+				return resource.getString(key);
+			} catch (Exception e) {
+				return "___"+key+"___no_entry";
+			}
+		}
+		return "___"+key+"___no_resource";
+	}
+	
+	public static String get(Locale locale, URL keyConfigUrl, String key) {
+		String remoteValue = getFromRemote(locale, keyConfigUrl, key);
 		if (!remoteValue.startsWith("___")) {
 			return remoteValue;
 		}
@@ -102,9 +114,9 @@ public class Messages {
 		return "___" + key + "___no_resource";
 	}
 
-	private static String getFromRemote(Locale locale, String key) {
+	private static String getFromRemote(Locale locale, URL keyConfigUrl, String key) {
         if (System.currentTimeMillis() - lastFetchedTime > CACHE_EXPIRY) {
-            fetchRemoteTranslations();
+            fetchRemoteTranslations(keyConfigUrl);
         }
 
         Map<String, String> translations = remoteTranslations.get(key);
@@ -114,10 +126,9 @@ public class Messages {
         return "___" + key + "___no_entry";
     }
 
-	private static void fetchRemoteTranslations() {
+	private static void fetchRemoteTranslations(URL keyConfigUrl) {
         try {
-            URL url = new URL(REMOTE_URL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            HttpURLConnection conn = (HttpURLConnection) keyConfigUrl.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
             conn.setConnectTimeout(5000);

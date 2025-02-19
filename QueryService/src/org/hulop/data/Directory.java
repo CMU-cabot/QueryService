@@ -26,7 +26,7 @@ public class Directory implements Searchable, Cloneable {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Directory(URL featuresUrl, URL nodemapUrl, Locale locale, boolean groupBuilding, boolean groupFloor, boolean groupCategory, boolean groupNearbyFacility) {
+	public Directory(URL featuresUrl, URL nodemapUrl, URL keyConfigUrl, Locale locale, boolean groupBuilding, boolean groupFloor, boolean groupCategory, boolean groupNearbyFacility) {
 		MapGeojson features = null;
 		MapGeojson nodemap = null;
 		try {
@@ -121,10 +121,10 @@ public class Directory implements Searchable, Cloneable {
 			for(String category:features.getMajorCategories()) {
 				if (category == null || category.isEmpty()) continue;
 				List<Facility> facilities = features.getFacilitiesByMajorCategory(category);
-				Item i = categoriesSection.add(new Item(Messages.get(locale, category), null));
+				Item i = categoriesSection.add(new Item(Messages.get(locale, keyConfigUrl, category), null));
 
 				Directory categoryDirectory = i.setContent(new Directory());
-				Section categorySection = categoryDirectory.add(new Section(Messages.get(locale, category)));
+				Section categorySection = categoryDirectory.add(new Section(Messages.get(locale, keyConfigUrl, category)));
 				for(Facility f:facilities) {
 					try {
 						categorySection.add(new Item(f.getName(),
@@ -442,9 +442,11 @@ public class Directory implements Searchable, Cloneable {
 		Boolean enableGroupNearbyFacility = false;
 		String featuresUrlstr = String.format("http://%s/routesearch?action=start&cache=false&lat=%s&lng=%s&user=%s&dist=%s&lang=%s", host, lat, lng, user, dist, lang);
 		String nodemapUrlString = String.format("http://%s/routesearch?action=nodemap&cache=false&lat=%s&lng=%s&user=%s&dist=%s&lang=%s", host, lat, lng, user, dist, lang);
+		String keyConfigUrlString = String.format("http://%s/cabot/query_service_keys.json", host);
 		URL featuresUrl = new URL(featuresUrlstr);
 		URL nodemapUrl = new URL(nodemapUrlString);
-		Directory d = new Directory(featuresUrl, nodemapUrl, new Locale(lang), enableGroupBuilding, enableGroupFloor, enableGroupCategory, enableGroupNearbyFacility);
+		URL keyConfigUrl = new URL(keyConfigUrlString);
+		Directory d = new Directory(featuresUrl, nodemapUrl, keyConfigUrl, new Locale(lang), enableGroupBuilding, enableGroupFloor, enableGroupCategory, enableGroupNearbyFacility);
 		walk(d.toJSON(), 0, 5);
 	}
 	// utility function
