@@ -99,9 +99,8 @@ public class Messages {
 	}
 	
 	public static String get(Locale locale, String key) {
-		String remoteValue = getFromRemote(locale, key);
-		if (!remoteValue.startsWith("___")) {
-			return remoteValue;
+		if (isRemoteKeyPresent(locale, key)) {
+			return getFromRemote(locale, key);
 		}
 
 		ResourceBundle resource = getBundle(locale);
@@ -115,19 +114,21 @@ public class Messages {
 		return "___" + key + "___no_resource";
 	}
 
+	private static boolean isRemoteKeyPresent(Locale locale, String key) {
+		if (System.currentTimeMillis() - lastFetchedTime > CACHE_EXPIRY) {
+			fetchRemoteTranslations();
+		}
+	
+		Map<String, String> translations = remoteTranslations.get(key);
+		return translations != null && translations.containsKey(locale.getLanguage());
+	}
+
 	private static String getFromRemote(Locale locale, String key) {
-        if (System.currentTimeMillis() - lastFetchedTime > CACHE_EXPIRY) {
-            fetchRemoteTranslations(keyConfigUrl);
-        }
+		Map<String, String> translations = remoteTranslations.get(key);
+		return translations.get(locale.getLanguage());
+	}
 
-        Map<String, String> translations = remoteTranslations.get(key);
-        if (translations != null) {
-            return translations.getOrDefault(locale.getLanguage(), "___" + key + "___no_entry");
-        }
-        return "___" + key + "___no_entry";
-    }
-
-	private static void fetchRemoteTranslations(URL keyConfigUrl) {
+	private static void fetchRemoteTranslations() {
         try {
             HttpURLConnection conn = (HttpURLConnection) keyConfigUrl.openConnection();
             conn.setRequestMethod("GET");
