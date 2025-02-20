@@ -22,20 +22,6 @@ public class Directory implements Searchable, Cloneable {
 	public Boolean showSectionIndex = false;
 	private JSONArray landmarks;
 
-	private static final URL keyConfigUrl = initKeyConfigUrl();
-	private static URL initKeyConfigUrl() {
-		try {
-			String use_http = System.getenv("HULOP_MAP_SERVICE_USE_HTTP");
-			String protocol = ("true".equals(use_http)) ? "http" : "https";
-			String mapService = System.getenv("HULOP_MAP_SERVICE");
-			String keyConfigUrlString = String.format("%s://%s/cabot/query_service_keys.json", protocol, mapService);
-			return new URL(keyConfigUrlString);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
 	public Directory() {
 		// TODO Auto-generated constructor stub
 	}
@@ -136,10 +122,10 @@ public class Directory implements Searchable, Cloneable {
 			for(String category:features.getMajorCategories()) {
 				if (category == null || category.isEmpty()) continue;
 				List<Facility> facilities = features.getFacilitiesByMajorCategory(category);
-				Item i = categoriesSection.add(new Item(Messages.get(locale, keyConfigUrl, category), null));
+				Item i = categoriesSection.add(new Item(Messages.get(locale, category), null));
 
 				Directory categoryDirectory = i.setContent(new Directory());
-				Section categorySection = categoryDirectory.add(new Section(Messages.get(locale, keyConfigUrl, category)));
+				Section categorySection = categoryDirectory.add(new Section(Messages.get(locale, category)));
 				for(Facility f:facilities) {
 					try {
 						categorySection.add(new Item(f.getName(),

@@ -19,10 +19,23 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.wink.json4j.JSONObject;
 
 public class Messages {
-	private static final String REMOTE_URL = "http://localhost:9090/map/cabot/query_service_keys.json";
 	private static final long CACHE_EXPIRY = 60000;
 	private static Map<String, Map<String, String>> remoteTranslations = new ConcurrentHashMap<>();
 	private static long lastFetchedTime = 0;
+
+	private static final URL keyConfigUrl = initKeyConfigUrl();
+	private static URL initKeyConfigUrl() {
+		try {
+			String use_http = System.getenv("HULOP_MAP_SERVICE_USE_HTTP");
+			String protocol = ("true".equals(use_http)) ? "http" : "https";
+			String mapService = System.getenv("HULOP_MAP_SERVICE");
+			String keyConfigUrlString = String.format("%s://%s/map/hulop_messages.json", protocol, mapService);
+			return new URL(keyConfigUrlString);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 	private static ResourceBundle.Control control = new ResourceBundle.Control() {
 		public static final String XML = "xml";
@@ -84,21 +97,9 @@ public class Messages {
 	public static ResourceBundle getBundle(Locale locale) {
 		return ResourceBundle.getBundle("org.hulop.data.i18n.Messages", locale, control);
 	}
-
-	public static String get(Locale locale, String key) {
-		ResourceBundle resource = getBundle(locale);
-		if (resource != null) {
-			try {
-				return resource.getString(key);
-			} catch (Exception e) {
-				return "___"+key+"___no_entry";
-			}
-		}
-		return "___"+key+"___no_resource";
-	}
 	
-	public static String get(Locale locale, URL keyConfigUrl, String key) {
-		String remoteValue = getFromRemote(locale, keyConfigUrl, key);
+	public static String get(Locale locale, String key) {
+		String remoteValue = getFromRemote(locale, key);
 		if (!remoteValue.startsWith("___")) {
 			return remoteValue;
 		}
@@ -114,7 +115,7 @@ public class Messages {
 		return "___" + key + "___no_resource";
 	}
 
-	private static String getFromRemote(Locale locale, URL keyConfigUrl, String key) {
+	private static String getFromRemote(Locale locale, String key) {
         if (System.currentTimeMillis() - lastFetchedTime > CACHE_EXPIRY) {
             fetchRemoteTranslations(keyConfigUrl);
         }
