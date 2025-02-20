@@ -20,9 +20,9 @@ import org.apache.wink.json4j.JSONObject;
 
 public class Messages {
 	private static final String REMOTE_URL = "http://localhost:9090/map/cabot/query_service_keys.json";
-    private static final long CACHE_EXPIRY = 60000;
-    private static Map<String, Map<String, String>> remoteTranslations = new ConcurrentHashMap<>();
-    private static long lastFetchedTime = 0;
+	private static final long CACHE_EXPIRY = 60000;
+	private static Map<String, Map<String, String>> remoteTranslations = new ConcurrentHashMap<>();
+	private static long lastFetchedTime = 0;
 
 	private static ResourceBundle.Control control = new ResourceBundle.Control() {
 		public static final String XML = "xml";
