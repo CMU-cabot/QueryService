@@ -27,7 +27,6 @@ public class Directory implements Searchable, Cloneable {
 	}
 	
 	public Directory(URL featuresUrl, URL nodemapUrl, Locale locale, boolean groupBuilding, boolean groupFloor, boolean groupCategory, boolean groupNearbyFacility) {
-
 		MapGeojson features = null;
 		MapGeojson nodemap = null;
 		try {

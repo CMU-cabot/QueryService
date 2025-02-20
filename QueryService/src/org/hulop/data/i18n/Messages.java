@@ -118,7 +118,7 @@ public class Messages {
 		if (System.currentTimeMillis() - lastFetchedTime > CACHE_EXPIRY) {
 			fetchRemoteTranslations();
 		}
-	
+
 		Map<String, String> translations = remoteTranslations.get(key);
 		return translations != null && translations.containsKey(locale.getLanguage());
 	}
