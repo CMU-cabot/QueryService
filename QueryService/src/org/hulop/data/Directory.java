@@ -22,11 +22,26 @@ public class Directory implements Searchable, Cloneable {
 	public Boolean showSectionIndex = false;
 	private JSONArray landmarks;
 
+	private static final URL keyConfigUrl = initKeyConfigUrl();
+	private static URL initKeyConfigUrl() {
+		try {
+			String use_http = System.getenv("HULOP_MAP_SERVICE_USE_HTTP");
+			String protocol = ("true".equals(use_http)) ? "http" : "https";
+			String mapService = System.getenv("HULOP_MAP_SERVICE");
+			String keyConfigUrlString = String.format("%s://%s/cabot/query_service_keys.json", protocol, mapService);
+			return new URL(keyConfigUrlString);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	public Directory() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Directory(URL featuresUrl, URL nodemapUrl, URL keyConfigUrl, Locale locale, boolean groupBuilding, boolean groupFloor, boolean groupCategory, boolean groupNearbyFacility) {
+	public Directory(URL featuresUrl, URL nodemapUrl, Locale locale, boolean groupBuilding, boolean groupFloor, boolean groupCategory, boolean groupNearbyFacility) {
+
 		MapGeojson features = null;
 		MapGeojson nodemap = null;
 		try {
@@ -446,7 +461,7 @@ public class Directory implements Searchable, Cloneable {
 		URL featuresUrl = new URL(featuresUrlstr);
 		URL nodemapUrl = new URL(nodemapUrlString);
 		URL keyConfigUrl = new URL(keyConfigUrlString);
-		Directory d = new Directory(featuresUrl, nodemapUrl, keyConfigUrl, new Locale(lang), enableGroupBuilding, enableGroupFloor, enableGroupCategory, enableGroupNearbyFacility);
+		Directory d = new Directory(featuresUrl, nodemapUrl, new Locale(lang), enableGroupBuilding, enableGroupFloor, enableGroupCategory, enableGroupNearbyFacility);
 		walk(d.toJSON(), 0, 5);
 	}
 	// utility function

@@ -59,7 +59,6 @@ public class DirectoryServlet extends HttpServlet {
 		String protocol = ("true".equals(use_http)) ? "http" : "https";
 		String mapService = System.getenv("HULOP_MAP_SERVICE");
 		String baseUrlString = String.format("%s://%s/routesearch", protocol, mapService);
-		String keyConfigUrlString = String.format("%s://%s/cabot/query_service_keys.json", protocol, mapService);
 		String enableGroupBuildingString = System.getenv("SEARCH_BY_BUILDING_ENABLED");
 		boolean enableGroupBuilding = enableGroupBuildingString != null ? Boolean.parseBoolean(enableGroupBuildingString) : false;
 		String enableGroupFloorString = System.getenv("SEARCH_BY_FLOOR_ENABLED");
@@ -90,8 +89,7 @@ public class DirectoryServlet extends HttpServlet {
 		try {
 			URL featuresUrl = new URL(featuresUrlString);
 			URL nodemapUrl  = new URL(nodemapUrlString);
-			URL keyConfigUrl = new URL(keyConfigUrlString);
-			Directory cdd = new Directory(featuresUrl, nodemapUrl, keyConfigUrl, new Locale(lang), enableGroupBuilding, enableGroupFloor, enableGroupCategory, enableGroupNearbyFacility);
+			Directory cdd = new Directory(featuresUrl, nodemapUrl, new Locale(lang), enableGroupBuilding, enableGroupFloor, enableGroupCategory, enableGroupNearbyFacility);
 			bean.addSearchable(user, cdd);
 			sendJSON(cdd.toJSON(), request, response);
 		}catch (Exception e) {
