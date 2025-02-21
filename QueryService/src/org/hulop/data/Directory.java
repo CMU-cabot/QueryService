@@ -445,7 +445,6 @@ public class Directory implements Searchable, Cloneable {
 		String keyConfigUrlString = String.format("http://%s/cabot/query_service_keys.json", host);
 		URL featuresUrl = new URL(featuresUrlstr);
 		URL nodemapUrl = new URL(nodemapUrlString);
-		URL keyConfigUrl = new URL(keyConfigUrlString);
 		Directory d = new Directory(featuresUrl, nodemapUrl, new Locale(lang), enableGroupBuilding, enableGroupFloor, enableGroupCategory, enableGroupNearbyFacility);
 		walk(d.toJSON(), 0, 5);
 	}
