@@ -250,8 +250,8 @@ public class MapGeojson {
 			building = "Others";
 		}
 		if ((name != null && name.length() > 0) || (exit != null && exit.length() > 0)) {
-			String facilityName = (exit != null) ? exit + name : name;
-			String facilityNamePron = (exitPron != null) ? exitPron + namePron : namePron;
+			String facilityName = (exit != null && !exit.trim().isEmpty()) ? name + ": " + exit : name;
+			String facilityNamePron = (exitPron != null && !exitPron.trim().isEmpty()) ? namePron + ": " + exitPron : namePron;
 			if (subCategory != null && Arrays.asList(services).contains(subCategory)) {
 				facility = new ServiceFacility(feature, facilityName, facilityNamePron, building, floor, nodeID, majorCategory, hulopTags);
 			} else {
