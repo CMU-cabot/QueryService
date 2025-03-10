@@ -435,14 +435,13 @@ public class Directory implements Searchable, Cloneable {
         }
 		String user = "test-user";
 		String dist = "5000";
-		String lang = "en";
+		String lang = "ja";
 		Boolean enableGroupBuilding = true;
 		Boolean enableGroupFloor = true;
 		Boolean enableGroupCategory = true;
 		Boolean enableGroupNearbyFacility = false;
 		String featuresUrlstr = String.format("http://%s/routesearch?action=start&cache=false&lat=%s&lng=%s&user=%s&dist=%s&lang=%s", host, lat, lng, user, dist, lang);
 		String nodemapUrlString = String.format("http://%s/routesearch?action=nodemap&cache=false&lat=%s&lng=%s&user=%s&dist=%s&lang=%s", host, lat, lng, user, dist, lang);
-		String keyConfigUrlString = String.format("http://%s/cabot/query_service_keys.json", host);
 		URL featuresUrl = new URL(featuresUrlstr);
 		URL nodemapUrl = new URL(nodemapUrlString);
 		Directory d = new Directory(featuresUrl, nodemapUrl, new Locale(lang), enableGroupBuilding, enableGroupFloor, enableGroupCategory, enableGroupNearbyFacility);
